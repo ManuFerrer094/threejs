@@ -1,0 +1,10 @@
+{
+    "nodos": [
+      {
+        "id": 1,
+        "nombre": "Esto es un texto.",
+        "posicion": { "x": 0, "y": 0, "z": 0 },
+        "conexiones": []
+      }
+    ]
+}
