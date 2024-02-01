@@ -8,35 +8,61 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden; /* Para asegurar que el canvas cubra todo el cuerpo */
+            overflow: hidden;
         }
         canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
         .controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1; /* Asegurarse de que los controles estén sobre el canvas */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 25%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
         }
         .button {
             font-size: 16px;
             padding: 10px 20px;
-            margin-right: 10px;
+            margin-bottom: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            width: calc(100% - 40px);
         }
         .button:hover {
             background-color: #45a049;
         }
-        .button:last-child {
-            margin-right: 0;
+        #textInput, #textColorPicker {
+            width: calc(100% - 40px);
+            margin-bottom: 10px;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Media queries para dispositivos móviles */
+        @media screen and (max-width: 768px) {
+            .controls {
+                width: 100%;
+                height: auto;
+                padding: 10px;
+            }
+            .button {
+                width: 100%;
+            }
+            #textInput, #textColorPicker {
+                width: calc(100% - 20px);
+            }
         }
     </style>
 </head>
@@ -45,10 +71,21 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="SceneController.js"></script>
     <script src="TextCreator.js"></script>
+    <canvas id="canvas"></canvas>
     <div class="controls">
         <button class="button" onclick="sceneController.toggleWireframe()">Wireframe</button>
         <input type="color" id="textColorPicker" onchange="textCreator.changeTextColor(this.value)">
         <input type="text" id="textInput" placeholder="Nuevo valor del texto" oninput="textCreator.changeTextValue(this.value)">
     </div>
+
+    <script>
+        window.addEventListener('resize', function() {
+            const canvas = document.getElementById('canvas');
+            const controls = document.querySelector('.controls');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            controls.style.height = window.innerHeight + 'px';
+        });
+    </script>
 </body>
 </html>

@@ -1,32 +1,47 @@
 class SceneController {
     constructor() {
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 80), 0.1, 1000);
-        this.camera.position.z = 10;
-        this.initialCameraZ = this.camera.position.z;
-        this.renderer = new THREE.WebGLRenderer();
-        this.renderer.setSize(window.innerWidth, window.innerHeight - 80);
-        document.body.appendChild(this.renderer.domElement);
-
-        // Agregar un fondo degradado o una textura al fondo de la escena
-        const textureLoader = new THREE.TextureLoader();
-        const backgroundTexture = textureLoader.load('background.jpg');
-        this.scene.background = backgroundTexture;
-
-        this.isDragging = false;
-        this.previousMousePosition = { x: 0, y: 0 };
-
-        this.bindEvents();
+        this.initScene();
+        this.initRenderer();
+        this.initCamera();
+        this.initEvents();
         this.render();
     }
 
-    bindEvents() {
+    initScene() {
+        this.scene = new THREE.Scene();
+        const textureLoader = new THREE.TextureLoader();
+        const backgroundTexture = textureLoader.load('background.jpg');
+        this.scene.background = backgroundTexture;
+    }
+
+    initRenderer() {
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight); // Ajustar tamaño del renderer al tamaño de la ventana
+        document.body.appendChild(this.renderer.domElement);
+    }
+
+    initCamera() {
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.z = 10;
+        this.initialCameraZ = this.camera.position.z;
+    }
+
+    initEvents() {
+        // Eventos de mouse
         document.addEventListener('mousedown', this.onDocumentMouseDown.bind(this), false);
         document.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
         document.addEventListener('mouseup', this.onDocumentMouseUp.bind(this), false);
         document.addEventListener('wheel', this.onDocumentMouseWheel.bind(this), false);
+
+        // Eventos táctiles
+        document.addEventListener('touchstart', this.onDocumentTouchStart.bind(this), false);
+        document.addEventListener('touchmove', this.onDocumentTouchMove.bind(this), false);
+        document.addEventListener('touchend', this.onDocumentTouchEnd.bind(this), false);
+
+        // Evento de redimensionamiento de la ventana
         window.addEventListener('resize', this.onWindowResize.bind(this));
 
+        // Evento de teclado
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
 
@@ -58,10 +73,33 @@ class SceneController {
         this.camera.position.z = Math.min(this.camera.position.z, this.initialCameraZ * 2);
     }
 
+    onDocumentTouchStart(event) {
+        const touch = event.touches[0];
+        this.isDragging = true;
+        this.previousMousePosition = { x: touch.clientX, y: touch.clientY };
+    }
+
+    onDocumentTouchMove(event) {
+        if (this.isDragging) {
+            const touch = event.touches[0];
+            const deltaMove = {
+                x: touch.clientX - this.previousMousePosition.x,
+                y: touch.clientY - this.previousMousePosition.y
+            };
+            this.camera.rotation.y += deltaMove.x * 0.01;
+            this.camera.rotation.x += deltaMove.y * 0.01;
+            this.previousMousePosition = { x: touch.clientX, y: touch.clientY };
+        }
+    }
+
+    onDocumentTouchEnd(event) {
+        this.isDragging = false;
+    }
+
     onWindowResize() {
-        this.camera.aspect = window.innerWidth / (window.innerHeight - 80);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight - 80);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     toggleWireframe() {
