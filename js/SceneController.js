@@ -3,8 +3,19 @@ class SceneController {
         this.initScene();
         this.initRenderer();
         this.initCamera();
+        this.initControls();
         this.initEvents();
         this.render();
+    }
+
+    initControls() {
+        // OrbitControls para habilitar interacción con dispositivos táctiles
+        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableZoom = true;
+        this.controls.enableRotate = true;
+        this.controls.enablePan = true;
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.2;
     }
 
     initScene() {
@@ -16,7 +27,7 @@ class SceneController {
 
     initRenderer() {
         this.renderer = new THREE.WebGLRenderer();
-        this.renderer.setSize(window.innerWidth, window.innerHeight); // Ajustar tamaño del renderer al tamaño de la ventana
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
     }
 
