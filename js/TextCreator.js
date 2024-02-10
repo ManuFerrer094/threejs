@@ -14,7 +14,7 @@ class TextCreator {
                 if (!data || !data.nodos) {
                     throw new Error('El archivo JSON no contiene datos válidos');
                 }
-
+    
                 data.nodos.forEach(nodo => {
                     const textGeometry = new THREE.TextGeometry(nodo.nombre, {
                         font: this.font,
@@ -22,13 +22,19 @@ class TextCreator {
                         height: 0.1,
                         curveSegments: 12
                     });
+                    textGeometry.computeBoundingBox(); // Calcular el cuadro delimitador del texto
                     const textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-                    textMesh.position.set(nodo.posicion.x, nodo.posicion.y, nodo.posicion.z);
+    
+                    // Ajustar la posición para centrar el texto en su posición
+                    const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+                    const xOffset = -textWidth / 2;
+                    textMesh.position.set(nodo.posicion.x + xOffset, nodo.posicion.y, nodo.posicion.z);
+    
                     sceneController.scene.add(textMesh);
                 });
             })
             .catch(error => console.error('Error al cargar los datos:', error));
-    }
+    }    
 
     changeTextColor(color) {
         sceneController.scene.traverse(child => {
