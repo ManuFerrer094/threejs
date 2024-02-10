@@ -10,7 +10,7 @@ class SceneController {
     initScene() {
         this.scene = new THREE.Scene();
         const textureLoader = new THREE.TextureLoader();
-        const backgroundTexture = textureLoader.load('background.jpg');
+        const backgroundTexture = textureLoader.load('light.jpg');
         this.scene.background = backgroundTexture;
     }
 
@@ -44,6 +44,21 @@ class SceneController {
         // Evento de teclado
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
+
+    changeBackground() {
+        if (this.scene.background.image.src.includes('light.jpg')) {
+            this.setBackground('dark.jpg');
+        } else {
+            this.setBackground('light.jpg');
+        }
+    }    
+    
+    setBackground(imagePath) {
+        const textureLoader = new THREE.TextureLoader();
+        const backgroundTexture = textureLoader.load(imagePath);
+        this.scene.background = backgroundTexture;
+    }
+    
 
     onDocumentMouseDown(event) {
         this.isDragging = true;
