@@ -6,6 +6,7 @@ class SceneController {
         this.initControls();
         this.initEvents();
         this.render();
+        this.initTouchZoom();
     }
 
     initControls() {
@@ -162,6 +163,35 @@ class SceneController {
                 this.camera.position.x += moveDistance;
                 break;
         }
+    }
+
+    initTouchZoom() {
+        let lastPinchDistance = 0;
+
+        const getPinchDistance = (touches) => {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        };
+
+        const onTouchStart = (event) => {
+            if (event.touches.length === 2) {
+                lastPinchDistance = getPinchDistance(event.touches);
+            }
+        };
+
+        const onTouchMove = (event) => {
+            if (event.touches.length === 2) {
+                const distance = getPinchDistance(event.touches);
+                const delta = distance - lastPinchDistance;
+                const zoomSpeed = 0.01; // Ajusta la velocidad del zoom según tus necesidades
+                this.camera.position.z += delta * zoomSpeed;
+                lastPinchDistance = distance;
+            }
+        };
+
+        document.addEventListener('touchstart', onTouchStart);
+        document.addEventListener('touchmove', onTouchMove);
     }
 }
 
